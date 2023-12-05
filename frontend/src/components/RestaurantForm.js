@@ -1,40 +1,103 @@
 import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const RestaurantForm = () => {
   const [name, setName] = useState('');
+  const [borough, setBorough] = useState('');
   const [cuisine, setCuisine] = useState('');
+  const [grades, setGrades] = useState([]);
+  const [building, setBuilding] = useState('');
+  const [coord, setCoord] = useState([]);
+  const [street, setStreet] = useState('');
+  const [zipcode, setZipcode] = useState('');
 
   const handleCreateRestaurant = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/restaurants', {
+      const newRestaurant = {
         name,
+        borough,
         cuisine,
-      });
+        grades,
+        restaurant_id: Math.floor(Math.random() * 100000000).toString(), // Generate a random restaurant_id (you can replace this with your logic)
+        address: {
+          building,
+          coord: coord.map(Number),
+          street,
+          zipcode,
+        },
+      };
+
+      const response = await axios.post('http://localhost:5000/api/restaurants', newRestaurant);
       console.log('New restaurant created:', response.data);
-      // Optionally, you can update the state or perform other actions after creating the restaurant
+
+      // Show alert for successful creation
+      alert('Restaurant added successfully!');
+
+      // Clear all textboxes
+      setName('');
+      setBorough('');
+      setCuisine('');
+      setGrades([]);
+      setBuilding('');
+      setCoord([]);
+      setStreet('');
+      setZipcode('');
     } catch (error) {
       console.error('Error creating restaurant:', error);
     }
   };
 
   return (
-    <div>
+    <div className="container mt-5">
       <h2>Create New Restaurant</h2>
-      <label>
-        Name:
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-      </label>
+      <div className="mb-3">
+        <label className="form-label">Name:</label>
+        <input type="text" className="form-control" value={name} onChange={(e) => setName(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Borough:</label>
+        <input type="text" className="form-control" value={borough} onChange={(e) => setBorough(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Cuisine:</label>
+        <input type="text" className="form-control" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Grades:</label>
+        <input
+          type="text"
+          className="form-control"
+          value={grades.join(',')}
+          onChange={(e) => setGrades(e.target.value.split(',').map(grade => ({ score: parseInt(grade) })))}
+        />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Building:</label>
+        <input type="text" className="form-control" value={building} onChange={(e) => setBuilding(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Coord (Latitude, Longitude):</label>
+        <input
+          type="text"
+          className="form-control"
+          value={coord.join(',')}
+          onChange={(e) => setCoord(e.target.value.split(',').map(Number))}
+        />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Street:</label>
+        <input type="text" className="form-control" value={street} onChange={(e) => setStreet(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Zipcode:</label>
+        <input type="text" className="form-control" value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
+      </div>
+      <button className="btn btn-primary" onClick={handleCreateRestaurant}>
+        Create Restaurant
+      </button>
       <br />
-      <label>
-        Cuisine:
-        <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
-      </label>
-      <br />
-      <button onClick={handleCreateRestaurant}>Create Restaurant</button>
-      <br />
-      <Link to="/">Go to Home</Link>
     </div>
   );
 };

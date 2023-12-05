@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
 const RestaurantList = () => {
@@ -18,11 +19,13 @@ const RestaurantList = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Restaurant List</h1>
-      <ul>
+    <div className="container mt-5">
+      <h1 className="mb-4">Restaurant List</h1>
+      <ul className="list-group">
         {restaurants.map((restaurant) => (
-          <li key={restaurant._id}>{restaurant.name}</li>
+          <li key={restaurant._id} className="list-group-item">
+            {restaurant.name}
+          </li>
         ))}
       </ul>
     </div>
