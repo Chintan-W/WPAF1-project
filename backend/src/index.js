@@ -59,18 +59,18 @@ app.put('/api/restaurants/:restaurant_id', async (req, res) => {
     const { restaurant_id } = req.params;
     const { ...restOfData } = req.body;
 
-    const isRestaurantIdUnique = await Restaurant.findOne({ restaurant_id, _id: { $ne: restaurant_id } });
-    if (isRestaurantIdUnique) {
-      return res.status(400).json({ error: 'restaurant_id must be unique' });
-    }
+    const updatedRestaurant = await Restaurant.findOneAndUpdate(
+      { restaurant_id },
+      restOfData,
+      { new: true, runValidators: true }
+    );
 
-    const updatedRestaurant = await Restaurant.findOneAndUpdate({ restaurant_id }, restOfData, { new: true });
     if (updatedRestaurant) {
       res.json(updatedRestaurant);
     } else {
       res.status(404).json({ error: 'Restaurant not found' });
     }
-  } catch (error) {
+  } catch (error) { 
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
