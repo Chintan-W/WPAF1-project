@@ -10,11 +10,15 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
 const MONGODB_URI = process.env.mongoURI || 'mongodb+srv://prachipal205:prachi@cluster0.larhym1.mongodb.net/sample_restaurants';
-app.use(cors());
+// Set up CORS
+app.use(cors({
+  origin: 'https://wpaf-1-project-7xun.vercel.app' 
+}));
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 
 
 app.get('/', (req, res) => {
