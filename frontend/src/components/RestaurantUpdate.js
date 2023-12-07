@@ -11,7 +11,7 @@ const RestaurantUpdate = () => {
 
   const handleSearchRestaurant = async () => {
     try {
-      const response = await axios.get(`https://vercel.com/chintans-projects-018c01db/wpaf-1-project/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
       
       if (!response.data) {
         alert('Restaurant not found');
@@ -38,7 +38,7 @@ const RestaurantUpdate = () => {
         // Add other properties as needed
       };
 
-      const response = await axios.put(`https://vercel.com/chintans-projects-018c01db/wpaf-1-project/api/restaurants/${restaurantId}`, updatedRestaurant);
+      const response = await axios.put(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`, updatedRestaurant);
       
       if (response.data) {
         alert('Restaurant updated successfully');

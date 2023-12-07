@@ -29,7 +29,7 @@ const RestaurantForm = () => {
         },
       };
 
-      const response = await axios.post('https://vercel.com/chintans-projects-018c01db/wpaf-1-project/api/restaurants', newRestaurant);
+      const response = await axios.post('https://wpaf-1-project.vercel.app/api/restaurants', newRestaurant);
       console.log('New restaurant created:', response.data);
 
       // Show alert for successful creation
