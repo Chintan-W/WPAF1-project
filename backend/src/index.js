@@ -5,7 +5,7 @@ import cors from 'cors';
 import Restaurant from './models/restaurant.model.js';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
@@ -91,6 +91,6 @@ app.delete('/api/restaurants/:restaurant_id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
