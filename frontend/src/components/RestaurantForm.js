@@ -20,7 +20,7 @@ const RestaurantForm = () => {
         borough,
         cuisine,
         grades,
-        restaurant_id: Math.floor(Math.random() * 100000000).toString(), // Generate a random restaurant_id (you can replace this with your logic)
+        restaurant_id: Math.floor(Math.random() * 100000000).toString(), // Generate a random restaurant_id 
         address: {
           building,
           coord: coord.map(Number),
