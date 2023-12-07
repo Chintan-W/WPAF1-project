@@ -16,6 +16,11 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 // Create a new restaurant
 app.post('/api/restaurants', async (req, res) => {
   try {
