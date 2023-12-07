@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
-const MONGODB_URI = 'mongodb+srv://bchintan99:chintan@cluster0.lbtbsd2.mongodb.net/sample_restaurants';
+const MONGODB_URI = 'mongodb+srv://prachipal205:prachi@cluster0.larhym1.mongodb.net/sample_restaurants';
 app.use(cors());
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
