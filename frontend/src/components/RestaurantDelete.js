@@ -9,7 +9,7 @@ const RestaurantDelete = ({ onDelete, onCancel }) => {
   const handleSearch = async () => {
     try {
       // Send a GET request to fetch the restaurant data based on restaurant_id
-      const response = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`https://vercel.com/chintans-projects-018c01db/wpaf-1-project/${restaurantId}`);
       setRestaurantData(response.data);
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
@@ -20,7 +20,7 @@ const RestaurantDelete = ({ onDelete, onCancel }) => {
   const handleDelete = async () => {
     try {
       // Send a DELETE request to delete the restaurant
-      await axios.delete(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      await axios.delete(`https://vercel.com/chintans-projects-018c01db/wpaf-1-project/${restaurantId}`);
       onDelete(restaurantId);
     } catch (error) {
       console.error('Error deleting restaurant:', error);

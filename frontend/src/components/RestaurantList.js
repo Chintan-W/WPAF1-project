@@ -10,7 +10,7 @@ const RestaurantList = () => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/restaurants');
+        const response = await axios.get('https://vercel.com/chintans-projects-018c01db/wpaf-1-project/api/restaurants');
         const sortedRestaurants = response.data.sort((a, b) => a.restaurant_id - b.restaurant_id);
         setRestaurants(sortedRestaurants);
       } catch (error) {
