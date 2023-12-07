@@ -11,7 +11,7 @@ const RestaurantUpdate = () => {
 
   const handleSearchRestaurant = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`https://vercel.com/chintans-projects-018c01db/wpaf-1-project/api/restaurants/${restaurantId}`);
       
       if (!response.data) {
         alert('Restaurant not found');
