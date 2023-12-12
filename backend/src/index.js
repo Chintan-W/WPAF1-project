@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 const app = express();
 const port = process.env.PORT || 5000;
 
-const __filename = new URL(import.meta.url).pathname;
+const __filename =fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
@@ -199,9 +199,10 @@ app.get('/api/restaurants/:restaurant_id', async (req, res) => {
 
 //eeeeeeeeeeejjjjjjjjjjjjjjsssssssssssssssss
 // Render the form
-app.get('/restaurants-details', (req, res) => {
-  res.render('restaurants-details-form'); 
+app.get('/api/restaurants-details', (req, res) => {
+  res.render('restaurants-details-form');
 });
+
 // Handle form submission
 app.post('/api/restaurants-details', async (req, res, next) => {
   try {
@@ -214,10 +215,12 @@ app.post('/api/restaurants-details', async (req, res, next) => {
     const perPage = bodyPerPage || queryPerPage || 10;
     const borough = bodyBorough || queryBorough;
 
+    console.log('page: ', page, 'perPage: ', perPage, 'borough: ', borough);
+
     const restaurants = await restaurantModule.getAllRestaurants(page, perPage, borough);
 
-    // Render the results in a different view
-    res.render('restaurants-results-details', { restaurants });
+    // Render the results in a different view, passing the 'page' variable
+    res.render('restaurants-results-details', { restaurants, page, perPage, borough});
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,3 @@
-<!-- views/restaurants-details-results.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,5 +15,15 @@
       <hr>
     <% }); %>
   </div>
+
+  <script>
+    const page = <%= page || 1 %>;
+    const perPage = <%= perPage || 5 %>;
+    const borough = '<%= borough || '' %>';
+
+    const apiUrl = `/api/restaurants?page=${page}&perPage=${perPage}&borough=${encodeURIComponent(borough)}`;
+
+    window.history.replaceState({}, document.title, apiUrl);
+  </script>
 </body>
 </html>
