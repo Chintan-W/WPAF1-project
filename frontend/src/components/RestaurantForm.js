@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 
 const RestaurantForm = () => {
   const [name, setName] = useState('');
   const [borough, setBorough] = useState('');
   const [cuisine, setCuisine] = useState('');
-  const [grades, setGrades] = useState([]);
   const [building, setBuilding] = useState('');
   const [coord, setCoord] = useState([]);
   const [street, setStreet] = useState('');
   const [zipcode, setZipcode] = useState('');
-
+  const authToken = localStorage.getItem('token');
+const navigate = useNavigate();
   const handleCreateRestaurant = async () => {
     try {
       const newRestaurant = {
         name,
         borough,
         cuisine,
-        grades,
         restaurant_id: Math.floor(Math.random() * 100000000).toString(), // Generate a random restaurant_id 
         address: {
           building,
@@ -28,22 +27,27 @@ const RestaurantForm = () => {
           zipcode,
         },
       };
+      if (!authToken) {
+        alert('You must be logged in to create a restaurant.');
+        navigate('/login');
+        return;
+      }
+      if(authToken){
+        const response = await axios.post('http://localhost:5000/api/restaurants', newRestaurant);
+        console.log('New restaurant created:', response.data);
 
-      const response = await axios.post('https://wpaf-1-project.vercel.app/api/restaurants', newRestaurant);
-      console.log('New restaurant created:', response.data);
+        // Show alert for successful creation
+        alert('Restaurant added successfully!');
 
-      // Show alert for successful creation
-      alert('Restaurant added successfully!');
-
-      // Clear all textboxes
-      setName('');
-      setBorough('');
-      setCuisine('');
-      setGrades([]);
-      setBuilding('');
-      setCoord([]);
-      setStreet('');
-      setZipcode('');
+        // Clear all textboxes
+        setName('');
+        setBorough('');
+        setCuisine('');
+        setBuilding('');
+        setCoord([]);
+        setStreet('');
+        setZipcode('');
+      }
     } catch (error) {
       console.error('Error creating restaurant:', error);
     }
@@ -63,15 +67,6 @@ const RestaurantForm = () => {
       <div className="mb-3">
         <label className="form-label">Cuisine:</label>
         <input type="text" className="form-control" value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Grades:</label>
-        <input
-          type="text"
-          className="form-control"
-          value={grades.join(',')}
-          onChange={(e) => setGrades(e.target.value.split(',').map(grade => ({ score: parseInt(grade) })))}
-        />
       </div>
       <div className="mb-3">
         <label className="form-label">Building:</label>

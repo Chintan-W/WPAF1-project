@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import {  useNavigate } from 'react-router-dom';
 
 const RestaurantDelete = ({ onDelete, onCancel }) => {
   const [restaurantId, setRestaurantId] = useState('');
   const [restaurantData, setRestaurantData] = useState(null);
-
+  const authToken = localStorage.getItem('token');
+const navigate = useNavigate();
   const handleSearch = async () => {
     try {
       // Send a GET request to fetch the restaurant data based on restaurant_id
-      const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
       setRestaurantData(response.data);
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
@@ -19,13 +21,32 @@ const RestaurantDelete = ({ onDelete, onCancel }) => {
 
   const handleDelete = async () => {
     try {
+      if (!authToken) {
+        alert('You must be logged in to delete a restaurant.');
+        navigate('/login');
+        return;
+      }
+      if(authToken){
       // Send a DELETE request to delete the restaurant
-      await axios.delete(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
+      await axios.delete(`http://localhost:5000/api/restaurants/${restaurantId}`);
       onDelete(restaurantId);
+      alert('Restaurant deleted successfully!');
+      clearData();
+      }
     } catch (error) {
       console.error('Error deleting restaurant:', error);
+  
+      if (error.response) {
+       
+        alert(`Error deleting restaurant. Server responded with ${error.response.status} status.`);
+      } else if (error.request) {
+        alert('Error deleting restaurant. No response received from the server.');
+      } else {
+        alert('Error deleting restaurant. Please try again.');
+      }
     }
   };
+  
 
   const clearData = () => {
     setRestaurantData(null);
@@ -56,7 +77,6 @@ const RestaurantDelete = ({ onDelete, onCancel }) => {
           <p className="mb-2">Restaurant ID: {restaurantData.restaurant_id}</p>
           <p className="mb-2">Name: {restaurantData.name}</p>
           <p className="mb-2">Borough: {restaurantData.borough}</p>
-          {/* Add more details based on your restaurant data structure */}
           
           <button className="btn btn-danger me-2" onClick={handleDelete}>
             Delete

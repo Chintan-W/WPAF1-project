@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import { createRoot } from 'react-dom/client';
+import {  useNavigate } from 'react-router-dom';
 
 const RestaurantUpdate = () => {
   const [restaurantId, setRestaurantId] = useState('');
   const [name, setName] = useState('');
   const [borough, setBorough] = useState('');
   const [cuisine, setCuisine] = useState('');
-
+  const authToken = localStorage.getItem('token');
+const navigate = useNavigate();
   const handleSearchRestaurant = async () => {
     try {
-      const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
       
       if (!response.data) {
         alert('Restaurant not found');
@@ -35,22 +36,27 @@ const RestaurantUpdate = () => {
         name,
         borough,
         cuisine,
-        // Add other properties as needed
       };
-
-      const response = await axios.put(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`, updatedRestaurant);
+      if (!authToken) {
+        alert('You must be logged in to update a restaurant.');
+        navigate('/login');
+        return;
+      }
+      if(authToken){
+      const response = await axios.put(`http://localhost:5000/api/restaurants/${restaurantId}`, updatedRestaurant);
       
       if (response.data) {
         alert('Restaurant updated successfully');
         clearFields();
       } else {
         alert('Restaurant not found');
-      }
+      }}
     } catch (error) {
       console.error('Error updating restaurant:', error);
       alert('An error occurred while updating the restaurant');
     }
   };
+
 
   const clearFields = () => {
     setRestaurantId('');

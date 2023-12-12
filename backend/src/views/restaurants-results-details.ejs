@@ -1,0 +1,20 @@
+<!-- views/restaurants-details-results.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Details Results</title>
+</head>
+<body>
+  <h1>Restaurant Details Results</h1>
+  <div id="resultContainer">
+    <% restaurants.forEach((restaurant) => { %>
+      <h3><%= restaurant.name %></h3>
+      <p>Borough: <%= restaurant.borough %></p>
+      <p>Cuisine: <%= restaurant.cuisine %></p>
+      <hr>
+    <% }); %>
+  </div>
+</body>
+</html>

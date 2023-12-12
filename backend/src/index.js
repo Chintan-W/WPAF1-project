@@ -1,108 +1,234 @@
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import Restaurant from './models/restaurant.model.js';
+import path from 'path';
+import restaurantModule from './restaurant.module.js';
+import User from './user.module.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+const __filename = new URL(import.meta.url).pathname;
+const __dirname = path.dirname(__filename);
+
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Middleware
 app.use(bodyParser.json());
-
-// Set up CORS
-app.use(cors({
-  origin: 'https://wpaf-1-project-7xun.vercel.app' 
-}));
-
-const MONGODB_URI = process.env.mongoURI || 'mongodb+srv://prachipal205:prachi@cluster0.larhym1.mongodb.net/sample_restaurants';
+app.use(cors({ origin: '*' }));
 
 
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+
+// MongoDB Connection
+const MONGODB_URI = process.env.mongoURI || 'mongodb+srv://bchintan99:chintan@cluster0.lbtbsd2.mongodb.net/sample_restaurants';
+
+const initializeMongoDB = async () => {
+  try {
+    // Initialize MongoDB and the Restaurant model
+    await restaurantModule.initialize(MONGODB_URI);
+    console.log('MongoDB initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize MongoDB:', error);
+    process.exit(1);
+  }
+};
+
+// JWT Secret Key
+const jwtSecret = 'pnc';
+
+// Middleware to verify JWT
+const authenticateJWT = (req, res, next) => {
+  const token = req.header('Authorization');
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+
+    req.user = user;
+    next();
+  });
+};
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 
+// User registration route
+app.post('/api/register', async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+    // Check if the username is already taken
+    const existingUser = await User.getUserByUsername(username);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username is already taken' });
+    }
+
+    // Hash the password before saving it
+    const hashedPassword = await bcrypt.hash(password, 10); // Use an appropriate saltRounds value
+
+    // Create a new user with the hashed password
+    const newUser = await User.createUser({ username, password: hashedPassword });
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    next(error);
+  }
 });
 
-// Create a new restaurant
+// login route
+app.post('/api/login', (req, res, next) => {
+  const { username, password } = req.body;
+  console.log('Entered login route:', username, password);
+
+  // Verify user credentials
+  let foundUser; // Declare a variable to store the user
+
+  User.getUserByUsername(username)
+    .then((user) => {
+      foundUser = user; // Store the user in the variable
+      console.log('User found:', foundUser);
+
+      if (!foundUser) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+      }
+
+      // Compare the entered password with the hashed password in the database
+      return bcrypt.compare(password, foundUser.password);
+    })
+    .then((isPasswordMatch) => {
+      console.log('Entered password:', password);
+      console.log('Hashed password from database:', foundUser.password);
+      console.log('Is password match?', isPasswordMatch);
+
+      if (!isPasswordMatch) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+      }
+
+      // Generate JWT token
+      const token = jwt.sign({ userId: foundUser._id }, jwtSecret, { expiresIn: '1h' });
+      res.json({ token });
+    })
+    .catch((error) => {
+      console.error('Login error:', error);
+      next(error);
+    });
+});
+
+
 app.post('/api/restaurants', async (req, res) => {
   try {
-    const newRestaurant = await Restaurant.create(req.body);
+    const newRestaurant = await restaurantModule.addNewRestaurant(req.body);
     res.status(201).json(newRestaurant);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 
-// Get all restaurants
-app.get('/api/restaurants', async (req, res) => {
-  try {
-    const restaurants = await Restaurant.find();
-    res.json(restaurants);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Get a restaurant by ID
-app.get('/api/restaurants/:id', async (req, res) => {
-  try {
-    const restaurant = await Restaurant.findOne({ restaurant_id: req.params.id });
-    if (restaurant) {
-      res.json(restaurant);
-    } else {
-      res.status(404).json({ error: 'Restaurant not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Update a restaurant by ID
 app.put('/api/restaurants/:restaurant_id', async (req, res) => {
   try {
-    const { restaurant_id } = req.params;
-    const { ...restOfData } = req.body;
-
-    const updatedRestaurant = await Restaurant.findOneAndUpdate(
-      { restaurant_id },
-      restOfData,
-      { new: true, runValidators: true }
-    );
-
-    if (updatedRestaurant) {
-      res.json(updatedRestaurant);
-    } else {
-      res.status(404).json({ error: 'Restaurant not found' });
-    }
-  } catch (error) { 
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    const restaurantId = req.params.restaurant_id;
+    const updatedRestaurant = await restaurantModule.updateRestaurantById(req.body, restaurantId);
+    res.json(updatedRestaurant);
+  } catch (error) {
+    next(error);
   }
 });
 
-// Delete a restaurant by ID
-app.delete('/api/restaurants/:restaurant_id', async (req, res) => {
+app.delete('/api/restaurants/:restaurant_id',  async (req, res) => {
   try {
-    const deletedRestaurant = await Restaurant.findOneAndDelete({ restaurant_id: req.params.restaurant_id });
+    const restaurantId = req.params.restaurant_id;
+    const deletedRestaurant = await restaurantModule.deleteRestaurantById(restaurantId);
     if (deletedRestaurant) {
       res.json({ message: 'Restaurant deleted successfully' });
     } else {
       res.status(404).json({ error: 'Restaurant not found' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.get('/', (req, res) => {
+  res.send('Hello World!');
 });
+
+app.get('/api/restaurants', async (req, res) => {
+  try {
+    const { page = 1, perPage = 10, borough } = req.query;
+    const restaurants = await restaurantModule.getAllRestaurants(page, perPage, borough);
+    res.json(restaurants);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/restaurants/:restaurant_id', async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurant_id;
+    const restaurant = await restaurantModule.getRestaurantById(restaurantId);
+    if (restaurant) {
+      res.json(restaurant);
+    } else { 
+      res.status(404).json({ error: 'Restaurant not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+//eeeeeeeeeeejjjjjjjjjjjjjjsssssssssssssssss
+// Render the form
+app.get('/restaurants-details', (req, res) => {
+  res.render('restaurants-details-form'); 
+});
+// Handle form submission
+app.post('/api/restaurants-details', async (req, res, next) => {
+  try {
+    // Extract parameters from both query and body
+    const { page: queryPage, perPage: queryPerPage, borough: queryBorough } = req.query;
+    const { page: bodyPage, perPage: bodyPerPage, borough: bodyBorough } = req.body;
+
+    // Use the values from the body if available, otherwise use the values from the query
+    const page = bodyPage || queryPage || 1;
+    const perPage = bodyPerPage || queryPerPage || 10;
+    const borough = bodyBorough || queryBorough;
+
+    const restaurants = await restaurantModule.getAllRestaurants(page, perPage, borough);
+
+    // Render the results in a different view
+    res.render('restaurants-results-details', { restaurants });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+const startServer = async () => {
+  await initializeMongoDB();
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+};
+
+startServer();
