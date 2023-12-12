@@ -15,7 +15,7 @@ const MapComponent = () => {
 
     // Fetch the restaurant data based on the search term
     try {
-      const response = await axios.get(`http://localhost:5000/api/restaurants/${searchTerm}`);
+      const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${searchTerm}`);
       const { coord } = response.data.address;
 
       if (map) {

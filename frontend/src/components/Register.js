@@ -14,7 +14,7 @@ const Register = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/register', userData);
+      const response = await axios.post('https://wpaf-1-project.vercel.app/api/register', userData);
       console.log('Registration successful:', response.data);
       navigate('/login');
     } catch (error) {

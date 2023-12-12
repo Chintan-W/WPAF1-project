@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: 'https://wpaf-1-project-7xun.vercel.app/' }));
 
 
 

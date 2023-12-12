@@ -13,7 +13,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/login', credentials);
+      const response = await axios.post('https://wpaf-1-project.vercel.app/api/login', credentials);
       const { token } = response.data;
 
       localStorage.setItem('token', token);

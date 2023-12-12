@@ -33,7 +33,7 @@ const navigate = useNavigate();
         return;
       }
       if(authToken){
-        const response = await axios.post('http://localhost:5000/api/restaurants', newRestaurant);
+        const response = await axios.post('https://wpaf-1-project.vercel.app/api/restaurants', newRestaurant);
         console.log('New restaurant created:', response.data);
 
         // Show alert for successful creation
