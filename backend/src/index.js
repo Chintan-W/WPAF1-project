@@ -13,11 +13,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-<<<<<<< HEAD
 const port = process.env.PORT;
-=======
-const port = process.env.PORT ;
->>>>>>> 1a58d4bebecde7303175afbc6db302f2837162c7
+
 
 const __filename =fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,11 +33,7 @@ app.use(cors({ origin: 'https://wpaf-1-project-7xun.vercel.app/' }));
 
 
 // MongoDB Connection
-<<<<<<< HEAD
 const MONGODB_URI = process.env.MONGODB_URI;
-=======
-const MONGODB_URI = process.env.MONGODB_URI; 
->>>>>>> 1a58d4bebecde7303175afbc6db302f2837162c7
 
 const initializeMongoDB = async () => {
   try {
