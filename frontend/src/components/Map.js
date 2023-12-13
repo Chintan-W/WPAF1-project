@@ -8,6 +8,7 @@ const MapComponent = () => {
   const [marker, setMarker] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [restaurantData, setRestaurantData] = useState(null);
+  const [mapKey, setMapKey] = useState(Date.now()); // Add key state
 
   const handleSearch = async () => {
     console.log('Searching for restaurant:', searchTerm);
@@ -29,6 +30,7 @@ const MapComponent = () => {
       // Set the marker directly using the Marker component
       setMarker({ lat, lng });
       setRestaurantData({ name, cuisine, address });
+      setMapKey(Date.now()); // Update the key to trigger re-render
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
     }
@@ -55,9 +57,10 @@ const MapComponent = () => {
       </div>
       <LoadScript googleMapsApiKey="AIzaSyBuTbPpEos_ED0QbVIU3EC8dx4NexwCGUU">
         <GoogleMap
+          key={mapKey} // Add key prop
           mapContainerStyle={{ width: '100%', height: 'calc(100vh - 60px)', position: 'absolute', top: '60px' }}
-          center={{ lat: 40.7925587, lng: -73.96805719999999 }}
-          zoom={14}
+          center={marker || { lat: 43.724330436, lng: -79.605497578 }}
+          zoom={15}
           onLoad={(map) => setMap(map)}
           onClick={handleMapClick}
         >
