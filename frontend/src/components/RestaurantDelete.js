@@ -28,7 +28,7 @@ const navigate = useNavigate();
       }
       if(authToken){
       // Send a DELETE request to delete the restaurant
-      await axios.delete(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      await axios.delete(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
       onDelete(restaurantId);
       alert('Restaurant deleted successfully!');
       clearData();
