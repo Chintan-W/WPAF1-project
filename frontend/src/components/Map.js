@@ -1,94 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
+import { GoogleMap, Marker, LoadScript, InfoWindow } from '@react-google-maps/api';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { InputGroup, FormControl, Button } from 'react-bootstrap';
+import { InputGroup, FormControl, Button, Card } from 'react-bootstrap';
 
 const MapComponent = () => {
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const { restaurantId } = useParams();
+  const [restaurantData, setRestaurantData] = useState(null);
 
   const handleSearch = async () => {
     console.log('Searching for restaurant:', searchTerm);
 
-    // Fetch the restaurant data based on the search term
+    // Fetch the restaurant data based on the search term (restaurant_id)
     try {
       const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${searchTerm}`);
-      const { coord } = response.data.address;
+      const { address, name, cuisine } = response.data;
 
-      if (map) {
-        // Remove existing marker, if any
-        if (marker) {
-          marker.remove();
-        }
+      console.log('API Response:', response.data); // Log the entire response
 
-        // Add a marker to the map
-        const newMarker = new mapboxgl.Marker().setLngLat(coord).addTo(map);
-        setMarker(newMarker);
-
-        // Center the map on the marker
-        map.flyTo({ center: coord, zoom: 15 });
+      if (!address || !address.coord || !Array.isArray(address.coord) || address.coord.length !== 2 || isNaN(address.coord[0]) || isNaN(address.coord[1])) {
+        console.error('Invalid coordinates:', address.coord);
+        return;
       }
+
+      const [lng, lat] = address.coord.map(coord => Number(coord)); // Convert coordinates to numbers
+
+      // Set the marker directly using the Marker component
+      setMarker({ lat, lng });
+      setRestaurantData({ name, cuisine, address });
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
     }
   };
 
-  useEffect(() => {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiY2hpbnRhbi13IiwiYSI6ImNscHZ1Z3ZheDA3bXkyaW54dGFiNDNhOGsifQ.ZWkuO3GwW39z6o_Gebv6hw';
-
-    const initializeMap = () => {
-      const newMap = new mapboxgl.Map({
-        container: 'map', // container ID
-        style: 'mapbox://styles/mapbox/streets-v11', // style URL
-        center: [-73.96805719999999, 40.7925587], // default center
-        zoom: 14, // default zoom
-      });
-
-      setMap(newMap);
-
-      newMap.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    };
-
-    if (!map) {
-      initializeMap();
-    }
-
-    return () => {
-      if (map) {
-        map.remove(); // Clean up map on component unmount
-      }
-    };
-  }, [map]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`); 
-        const { coord } = response.data.address;
-
-        if (map) {
-          // Add a marker to the map
-          const newMarker = new mapboxgl.Marker().setLngLat(coord).addTo(map);
-          setMarker(newMarker);
-
-          // Center the map on the marker
-          map.flyTo({ center: coord, zoom: 15 });
-        }
-      } catch (error) {
-        console.error('Error fetching restaurant data:', error);
-      }
-    };
-
-    if (restaurantId && map) {
-      fetchData();
-    }
-  }, [restaurantId, map]);
+  // Close the InfoWindow when the map is clicked
+  const handleMapClick = () => {
+    setRestaurantData(null);
+  };
 
   return (
-    <>
+    <div>
       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: '1' }}>
         <InputGroup className="mb-3">
           <FormControl
@@ -101,8 +53,29 @@ const MapComponent = () => {
           </Button>
         </InputGroup>
       </div>
-      <div id="map" style={{ width: '100%', height: 'calc(100vh - 60px)', position: 'absolute', top: '60px' }} />
-    </>
+      <LoadScript googleMapsApiKey="AIzaSyBuTbPpEos_ED0QbVIU3EC8dx4NexwCGUU">
+        <GoogleMap
+          mapContainerStyle={{ width: '100%', height: 'calc(100vh - 60px)', position: 'absolute', top: '60px' }}
+          center={{ lat: 40.7925587, lng: -73.96805719999999 }}
+          zoom={14}
+          onLoad={(map) => setMap(map)}
+          onClick={handleMapClick}
+        >
+          {marker && <Marker position={marker} />}
+          {restaurantData && (
+            <InfoWindow position={marker} onCloseClick={() => setRestaurantData(null)}>
+              <Card style={{ width: '200px' }}>
+                <Card.Body>
+                  <Card.Title>{restaurantData.name}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">{restaurantData.cuisine}</Card.Subtitle>
+                  <Card.Text>{restaurantData.address.building} {restaurantData.address.street}, {restaurantData.address.zipcode}</Card.Text>
+                </Card.Body>
+              </Card>
+            </InfoWindow>
+          )}
+        </GoogleMap>
+      </LoadScript>
+    </div>
   );
 };
 

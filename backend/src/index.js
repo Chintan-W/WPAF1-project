@@ -228,7 +228,21 @@ app.post('/api/restaurants-details', async (req, res, next) => {
   }
 });
 
+// get restaurant by name
+app.get('/api/restaurants/name/:restaurant_name', async (req, res) => {
+  try {
+    const restaurantName = req.params.restaurant_name;
+    const restaurant = await restaurantModule.getRestaurantByName(restaurantName);
 
+    if (restaurant) {
+      res.json(restaurant);
+    } else {
+      res.status(404).json({ error: 'Restaurant not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 const startServer = async () => {
   await initializeMongoDB();
   app.listen(port, () => {

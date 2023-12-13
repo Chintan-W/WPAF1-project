@@ -100,6 +100,21 @@ const step3 = async (page, perPage, borough) => {
     throw new Error('Error getting all restaurants');
   }
 };
+// restaurant.module.js
+import Restaurant from './path-to-your-model/restaurant.model.js';
+
+// ...
+
+const getRestaurantByName = async (restaurantName) => {
+  try {
+    const restaurant = await Restaurant.findOne({ name: restaurantName });
+
+    return restaurant;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default {
   initialize,
   addNewRestaurant,
@@ -109,4 +124,5 @@ export default {
   deleteRestaurantById,
   getRestaurantsByBorough,
   step3,
+  getRestaurantByName,
 };
