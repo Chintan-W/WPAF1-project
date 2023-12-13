@@ -11,7 +11,7 @@ const navigate = useNavigate();
   const handleSearch = async () => {
     try {
       // Send a GET request to fetch the restaurant data based on restaurant_id
-      const response = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
       setRestaurantData(response.data);
     } catch (error) {
       console.error('Error fetching restaurant data:', error);

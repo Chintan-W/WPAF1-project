@@ -10,7 +10,7 @@ const RestaurantList = () => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/restaurants?page=${currentPage}&perPage=${restaurantsPerPage}`);
+        const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants?page=${currentPage}&perPage=${restaurantsPerPage}`);
         console.log('Response from backend:', response.data);
         const sortedRestaurants = response.data;
         setRestaurants(sortedRestaurants);

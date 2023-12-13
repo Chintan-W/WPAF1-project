@@ -1,26 +1,22 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "src/*.js",
-        "use": "@vercel/node"
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/restaurants",
+      "dest": "/src/index.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://wpaf-1-project-7xun.vercel.app"
       }
-    ],
-    "routes": [
-      {
-        "src": "/api/restaurants",
-        "dest": "/src/index.js",
-        "headers": [
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "https://wpaf-1-project-7xun.vercel.app"
-          }
-        
-        ]
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/src/index.js"
-      }
-    ]
-  }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/src/index.js"
+    }
+  ]
+}

@@ -12,7 +12,7 @@ const RestaurantUpdate = () => {
 const navigate = useNavigate();
   const handleSearchRestaurant = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      const response = await axios.get(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`);
       
       if (!response.data) {
         alert('Restaurant not found');
@@ -43,7 +43,7 @@ const navigate = useNavigate();
         return;
       }
       if(authToken){
-      const response = await axios.put(`http://localhost:5000/api/restaurants/${restaurantId}`, updatedRestaurant);
+      const response = await axios.put(`https://wpaf-1-project.vercel.app/api/restaurants/${restaurantId}`, updatedRestaurant);
       
       if (response.data) {
         alert('Restaurant updated successfully');
