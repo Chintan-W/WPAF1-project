@@ -9,13 +9,7 @@
   "routes": [
     {
       "src": "/",
-      "dest": "/src/index.js",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "https://wpaf-1-project-7xun.vercel.app"
-        }
-      ]
+      "dest": "/src/index.js"
     },
     {
       "src": "/(.*)",
