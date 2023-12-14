@@ -55,7 +55,7 @@ const authToken = localStorage.getItem('token');
                 <Nav.Link as={Link} to="/" onClick={logout}>
                   Logout
                 </Nav.Link>
-                <Nav.Link as={Link} to="https://wpaf-1-project.vercel.app/api/restaurant-details">EJs</Nav.Link>
+                <Nav.Link as={Link} to="https://wpaf-1-project.vercel.app/api/restaurants-details">EJS</Nav.Link>
               </>
             )}
           </Nav>
