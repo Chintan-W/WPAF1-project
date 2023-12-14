@@ -135,7 +135,7 @@ app.post('/api/login', (req, res, next) => {
     });
 });
 
-
+//create
 app.post('/api/restaurants', async (req, res) => {
   try {
     const newRestaurant = await restaurantModule.addNewRestaurant(req.body);
@@ -144,7 +144,7 @@ app.post('/api/restaurants', async (req, res) => {
     next(error);
   }
 });
-
+//update
 app.put('/api/restaurants/:restaurant_id', async (req, res) => {
   try {
     const restaurantId = req.params.restaurant_id;
